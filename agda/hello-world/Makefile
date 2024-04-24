@@ -1,5 +1,5 @@
 all:
-	agda --compile hello-world.agda -o hello-world
+	agda --compile hello-world.agda
 
 clean:
-	rm hello-world
+	rm -rf hello-world hello-world.agdai MAlonzo
