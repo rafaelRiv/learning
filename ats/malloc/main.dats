@@ -1,18 +1,14 @@
 #include "share/atspre_define.hats"
 #include "share/atspre_staload.hats"
 
-#include "share/atspre_define.hats"
-#include "share/atspre_staload.hats"
+staload "prelude/SATS/pointer.sats"
+staload "prelude/SATS/memory.sats"
 
-%{
-  #include <stdio.h>
-  #include <stdlib.h>
-%}
 
-extern fun malloc
-  {a:t@ype}
-  (s:sizeof_t a):
-  [l:addr | l > null] (a? @ l | ptr l)
-  = "ext#malloc"
+implement main0 () = 
+  let
+    val (pf, pfgc | i) = malloc_gc(sizeof<int>)
+  in
+    mfree_gc(pf, pfgc | i)
+  end
 
-implement main0 () = print "Hello World"
