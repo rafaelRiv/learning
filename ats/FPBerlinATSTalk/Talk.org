@@ -1,0 +1,1005 @@
+#+TITLE: Why Linear Types Are The Future Of Systems Programming
+#+AUTHOR: Aditya Siram
+#+OPTIONS: H:2 toc:f
+#+OPTIONS: ^:nil
+#+LATEX_CLASS: beamer
+#+LATEX_listingsCLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: metropolis
+
+* Introduction
+** Introduction
+- ATS programming language
+  + ML
+  + linear types
+  + refinement types
+  + dependant types
+  + As fast as C! ("blazing fast")
+- Lots of typelevel madness
+  + No optimizations
+- Hongwei Xi
+  + Boston University
+** Introduction
+- Very hard!
+  + Research language
+  + hbox overfull with ideas
+  + Tons of accidental complexity
+  + Keywords everywhere ...
+  + Zero docs
+- And that's OK!
+  + Our job to make usable things
+** Introduction
+- Goals
+  + Not evangelism!
+  + Not adoption!
+  + Be dissatisfied
+  + Inspire your next language
+** Introduction
+- Very difficult to present
+  + Linear/dependant/refinement types, ML, C all converge
+- Concrete motivating examples
+  + High level handwaving
+- Assuming comfort with ML like langs and basic C
+- Start by taste of the ML & C side
+- It'll get fairly advanced
+** Option Datatype
+- First from the ML side
+** Option datatype
+- A linear ~Option~ (explanations come later ...)
+#+begin_src sml
+datavtype Option_vt (a:vt@ype, bool) =
+  | Some_vt(a, true) of (a)
+  | None_vt(a, false)
+#+end_src
+** Option datatype
+- probably more familiar (~_vt~ for viewtype)
+#+begin_src sml
+datavtype Option_vt                  =
+  | Some_vt          of (a)
+  | None_vt
+#+end_src
+** Option datatype
+- Indexed on a type-level ~bool~, dependent types!
+#+begin_src sml
+datavtype Option_vt                  =
+  | Some_vt(a, true) of (a)
+  | None_vt(a, false)
+#+end_src
+** Option datatype
+- Sort level ~bool~
+#+begin_src sml
+datavtype Option_vt                  =
+  | Some_vt(a, true) of (a)
+  | ...        ^^^^
+#+end_src
+** Option datatype
+- Parameterized on a view type, linear types!
+#+begin_src sml
+datavtype Option_vt (a:vt@ype, bool) =
+  | ...                ^^^^^^
+  | ...
+#+end_src
+** Option datatype
+- All ADTs in ATS are GADTs
+#+begin_src sml
+datavtype Option_vt (a:vt@ype, bool) =
+  | Some_vt(a, true) of (a)
+  | None_vt(a, false)
+#+end_src
+** Array datatype
+- A linear C array
+#+begin_src sml
+absvtype arrayptr (a:vt@ype, l:addr, n:int) = ptr(l)
+vtypedef arrayptr (a:vt@ype, n:int) =
+  [l:addr] arrayptr(a, l, n)
+#+end_src
+** Array datatype
+- Just a pointer to some address, that's it
+#+begin_src sml
+                             l:addr         = ptr(l)
+vtypedef arrayptr                            ^^^^^^^
+...
+#+end_src
+** Array datatype
+- Parameterized on a linear viewtype & size (should be ~size_t~)
+#+begin_src sml
+...
+vtypedef arrayptr (a:vt@ype, n:int) =
+...                ^^^^^^^^^^^^^^^
+#+end_src
+** Array datatype
+- Returns an ~arrayptr~ to an /existential/ (unknown) address type
+#+begin_src sml
+                             l:addr         = ptr(l)
+vtypedef arrayptr                   =
+  [l:addr]
+#+end_src
+** Array datatype
+- Don't worry if this isn't clear
+- Just a taste ...
+- Tons type level concepts to learn!
+- we'll get to some later ...
+** Manual Memory Management
+- Now from the C side!
+** Manual Memory Management
+- What resources are leaked?
+#+begin_src c
+int main(int argc, char** argv) {
+  int* i = (int*)malloc(sizeof(int));
+  *i = 10;
+  FILE* fp = fopen("test.txt","r");
+  return 0;
+}
+#+end_src
+** Manual Memory Management
+- Memory!
+#+begin_src c
+int main(int argc, char** argv) {
+  int* i = (int*)malloc(sizeof(int)); // <--- LEAK!!
+  *i = 10;
+  FILE* fp = fopen("test.txt","r");
+  return 0;
+}
+#+end_src
+** Manual Memory Management
+- File descriptor
+#+begin_src c
+int main(int argc, char** argv) {
+  int* i = (int*)malloc(sizeof(int)); // <--- LEAK!!
+  *i = 10;
+  FILE* fp = fopen("test.txt","r"); // <-- LEAK!!
+  return 0;
+}
+#+end_src
+** Manual Memory Management
+- /Equivalent/ ATS program
+#+begin_src sml
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset | ()) = ptr_set(pf | i, 10)
+  val (pfFile | fp) = fopen("test.txt", "r")
+in
+  free(pfset | i);
+  fclose(pfFile | fp);
+end
+#+end_src
+** Manual Memory Management
+- "Client-facing" code, analogous, safe, this is why ATS is "fast"
+#+begin_src c
+implement main0 () = let
+  val (     i) = malloc (sizeof<int>)
+  val (        ()) = ptr_set(     i, 10)
+  val (         fp) = fopen("test.txt", "r")
+in
+  free(        i);
+  fclose(         fp);
+end
+#+end_src
+** Manual Memory Management
+- ~malloc~ /produces/ a linear proof ~pf~, /consumed/ by ~ptr_set~
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (      | ()) = ptr_set(pf | i, 10)
+  val (         fp) = fopen("test.txt", "r")
+in
+  free(        i);
+  fclose(         fp);
+end
+#+end_src
+** Manual Memory Management
+- ~ptr_set~ /produces/ a proof ~pfset~
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset | ()) = ptr_set(pf | i, 10)
+  val (       | fp) = fopen("test.txt", "r")
+in
+  free(        i);
+  fclose(         fp);
+end
+#+end_src
+** Manual Memory Management
+- ~fopen~ produces a proof of the file descriptor ~pfFile~
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset | ()) = ptr_set(pf | i, 10)
+  val (pfFile | fp) = fopen("test.txt", "r")
+in
+  free(pfset | i);
+  fclose(pfFile | fp);
+end
+#+end_src
+** Manual Memory Management
+- What happens when ~free~ and ~fopen~ are deleted?
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset | ()) = ptr_set(pf | i, 10)
+  val (pfFile | fp) = fopen("test.txt", "r")
+in
+
+
+end
+#+end_src
+** Manual Memory Management
+- ~pfset~ is left unconsumed
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset <---
+  val (pfFile | fp) = fopen("test.txt", "r")
+in
+
+
+end
+#+end_src
+** Manual Memory Management
+- ~pfFile~ is left unconsumed
+#+begin_src c
+implement main0 () = let
+  val (pf | i) = malloc (sizeof<int>)
+  val (pfset <---
+  val (pfFile <---
+in
+
+
+end
+#+end_src
+** Manual Manual Management
+- Consumed by ~free~
+#+begin_src sml
+implement main0 () = let
+  ...
+  val (pfset <----
+
+in
+  free(pfset | i); <---
+
+end
+#+end_src
+** Manual Memory Management
+- Consumed by ~fclose~, and that's it!
+#+begin_src sml
+implement main0 () = let
+
+
+  val (pfFile <---
+in
+
+  fclose(pfFile | fp); <--
+end
+#+end_src
+** Manual Memory Management
+- Linear types == generalized resource tracking!
+- Free to write your all your code this way!
+  - safe from buffer overflows & pointer bugs
+  - ... there's sugar for implicitly passing proofs around
+- Reuse decades of design sensibilities (safely!)
+- But you're not benefitting from Functional Programming™...
+** Dependant & Refinement Types
+- First "big" example
+  + Read a number from the user between 1 and 10
+  + Allocate an array of that length
+  + Fill it
+  + Print it to console
+  + Exit
+- Doesn't seem like it but it's a LOT
+** Dependant & Refinement Types
+- Overall structure, types simpliifed
+- Not too far from a functional program
+#+begin_src sml
+fun read_input():Option_vt(a) = ...
+fun make_array (len:int n): arrayptr = ...
+implement main0() = begin
+    println! ("Length of array? (1-10):");
+    case+ read_input<int>() of
+    | ~None_vt() => println! ("Not a number!")
+    | ~Some_vt(len) =>
+        if (len >= 1) * (len <= 10) then
+          make_array(len)
+        else println! ("Bad number!")
+#+end_src
+** Dependant & Refinement Types
+- Simplified ~make_array~ type signature
+ #+begin_src sml
+fun make_array (len:int n): arrayptr = ...
+...
+...
+...
+ #+end_src
+** Dependant & Refinement Types
+- Real ~make_array~ type signature
+  #+begin_src sml
+fun make_array
+  {n:int| n >= 1; n <= 10}
+  (len:int n): [l:addr] arrayptr(int,l,n) =
+  ...
+  #+end_src
+
+** Dependant & Refinement Types
+- ~len~ is indexed with a refined int /sort/, ~n~.
+  #+begin_src sml
+fun make_array
+  {n:int| n >= 1; n <= 10} <-- refines it
+  (len:int n): [l:addr] arrayptr(int,l,n) =
+       ^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- Array pointer at /some/ address
+  #+begin_src sml
+fun make_array
+  {n:int| n >= 1; n <= 10}
+  (len:int n): [l:addr] arrayptr(int,l,n) =
+               ^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- Length between 1 & 10!
+  #+begin_src sml
+fun make_array
+  {n:int| n >= 1; n <= 10}
+  (len:int n): [l:addr] arrayptr(int,l,n) =
+                                      ^^^
+  #+end_src
+** Dependant & Refinement Types
+- ... being called here
+  #+begin_src sml
+implement main0() =
+    ...
+    case+ ... of
+    | ...
+    | ...
+        if (len >= 1) * (len <= 10) then
+          make_array(len)
+          ^^^^^^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- how does it know ~{n:int| n >= 1; n <= 10}~?!!
+  #+begin_src sml
+implement main0() =
+    ...
+    case+ ... of
+    | ...
+    | ...
+        if (len >= 1) * (len <= 10) then
+          make_array(len)
+          ^^^^^^^^^^^^^^^
+  #+end_src
+
+** Dependant & Refinement Types
+- It statically understands runtime checks!
+  #+begin_src sml
+implement main0() =
+    ...
+    case+ ... of
+    | ...
+    | ...
+        if (len >= 1) * (len <= 10) then
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+          ...
+  #+end_src
+
+** Dependant & Refinement Types
+- Runtime checks discharge proofs at *compile time*.
+  #+begin_src sml
+implement main0() =
+    ...
+    case+ ... of
+    | ...
+    | ...
+        if (len >= 1) * (len <= 10) then
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+          ...
+  #+end_src
+** Dependant & Refinement Types
+- Now anything in ~make_array~'s call graph inherits the refinement
+  #+begin_src sml
+fun make_array
+  {n:int| n >= 1; n <= 10}
+  ^^^^^^^^^^^^^^^^^^^^^^^^
+  (len:int n): [l:addr] arrayptr(int,l,n) =
+  #+end_src
+** Dependant & Refinement Types
+- Reading user input is actually the most interesting bit
+  - It interleaves basic theorem, dependent types & runtime checks!
+  - The interleaving is unique to ATS to my knowledge ...
+** Dependant & Refinement Types
+- The old ~read_input~:
+  #+begin_src sml
+fun read_input():Option_vt(a) = ...
+  #+end_src
+** Dependant & Refinement Types
+- The actual ~read_input~ type signature:
+  #+begin_src sml
+fun {a:t@ype} read_input():Option_vt(a) =
+    ^^^^^^^^               ^^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- The body:
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load<a> (stdin_ref,result)
+  in
+  if success then
+    let prval () = opt_unsome(result)
+    in Some_vt(result) end
+  else
+    let prval () = opt_unnone(result)
+    in None_vt end
+  end
+  #+end_src
+
+** Dependant & Refinement Types
+- Make a /stack/ variable!
+  #+begin_src sml
+  let
+    var result: a? <---
+
+  in
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+
+** Dependant & Refinement Types
+- Fill it with user input
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load<a> (stdin_ref,result)
+  in              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+
+** Dependant & Refinement Types
+- Stuff it into a ~Some~:
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load<a> (stdin_ref,result)
+  in              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  if success then
+    let prval () = opt_unsome(result)
+    in Some_vt(result) end
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Hold up! ~result~ is of type ~a?~, uninitialized
+  #+begin_src sml
+  let
+    var result: a? <----
+
+  in
+  if success then
+
+    in Some_vt(result) end
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- ...and ~Option_vt(a)~ needs ~a~ /not/ ~a?~
+  #+begin_src sml
+  let
+    var result: a? <----
+
+  in
+  if success then
+
+    in Some_vt(result) <----
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- The magic is happening with proof functions
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load <---
+  in
+  if success then  <---
+    let prval () = opt_unsome(result) <---
+    in Some_vt(result) end
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Interleave a proof level function, erased at runtime!
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then
+    let prval () = opt_unsome(result)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Step back and look at ~fileref_load~
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load  <---
+  in
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- The /scary/ type of ~fileref_load~:
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+ ...
+#+end_src
+** Dependant & Refinement Types
+- Takes a reference to ~stdin~:
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+^^^^^^^^
+  #+end_src
+
+** Dependant & Refinement Types
+- A reference (l-value) to an uninitialized stack variable:
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+         ^^^^
+  #+end_src
+
+** Dependant & Refinement Types
+- And returns a ~bool~ /indexed/ with ~bool~!
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+                                    ^^^^^^^^^^^^^^^^^
+  #+end_src
+
+** Dependant & Refinement Types
+- success ==  ~true~ indexed with a static ~true~.
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+                                    ^^^^^^^^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- failure ==  ~false~ indexed with a static ~false~.
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+                                    ^^^^^^^^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- The linear proof is in-place transformed ...
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+             ^^^^
+  #+end_src
+** Dependant & Refinement Types
+- ... into a tuple of an initialized ~a~ and static bool
+  #+begin_src sml
+(FILEref, &a? >> opt(a, b)) -<fun1> #[b:bool] bool(b)
+                 ^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- Back to the example!
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- ~success~ is a ~bool~ indexed with a ~bool~
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load  <---
+  in
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- ~result~ is a now ~(a,true|false)~
+  #+begin_src sml
+  let
+    var result: a? <---
+    val success = fileref_load
+  in
+  if success then
+
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Now ~result~ is ~(a,true)~!
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then <---
+
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Now look at the /proof function/ ~opt_unsome~
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then
+    let prval () = opt_unsome(result) <---
+
+  else
+
+
+  end
+  #+end_src
+** Dependant & Refinement Types
+- The scary proof function:
+  #+begin_src sml
+praxi opt_unsome{a:vt@ype}
+  (x: opt(a, true) >> a):<prf> void
+...
+  #+end_src
+
+** Dependant & Refinement Types
+- It's a "proof axiom" (~praxi~)
+  #+begin_src sml
+praxi opt_unsome{a:vt@ype}
+^^^^^
+...
+  #+end_src
+** Dependant & Refinement Types
+- ... essentially a proof level assertion!
+  #+begin_src sml
+praxi opt_unsome{a:vt@ype}
+^^^^^
+...
+  #+end_src
+** Dependant & Refinement Types
+- In-place transforms a ~opt(a,true)~ into ~a~!
+  #+begin_src sml
+praxi opt_unsome{a:vt@ype}
+  (x: opt(a, true) >> a):<prf> void
+      ^^^^^^^^^^^^^^^^^
+  #+end_src
+** Dependant & Refinement Types
+- So now ~result~ is ~a~ not ~a?~ !
+  #+begin_src sml
+let
+  var result: a?
+  val success = fileref_load
+in
+if success then
+  let prval () = opt_unsome(result)
+  in Some_vt(result) end <---
+else
+
+end
+  #+end_src
+** Dependant & Refinement Types
+- ~opt_unnone~ does something similar!
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load<a> (stdin_ref,result)
+  in
+  if success then
+
+
+  else
+    let prval () = opt_unnone(result) <--
+    in None_vt end
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Everything after ~fileref_load~ is purely mechanical
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then                     <--
+    let prval () = opt_unsome(result) <--
+    in Some_vt(result) end            <--
+  else                                <--
+    let prval () = opt_unnone(result) <--
+    in None_vt end                    <--
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Could all be synthesized!
+  #+begin_src sml
+  let
+    var result: a?
+    val success = fileref_load
+  in
+  if success then                     <--
+    let prval () = opt_unsome(result) <--
+    in Some_vt(result) end            <--
+  else                                <--
+    let prval () = opt_unnone(result) <--
+    in None_vt end                    <--
+  end
+  #+end_src
+** Dependant & Refinement Types
+- Taking stock ...
+- Dependent types are cool
+- Interleaved proof functions are a game changer
+- And! ...
+** Dependant & Refinement Types
+- Back to runtime checks!
+ #+begin_src sml
+fun read_input ... =
+ let
+    ...
+ in
+ if success then <---
+ else ...
+#+end_src
+** Dependant & Refinement Types
+- Back to runtime checks!
+#+begin_src sml
+implement main0() =
+    ...
+    case+ ... of
+    | ... =>
+        if (len >= 1) * (len <= 10) then
+            ^^^^^^^^^^^^^^^^^^^^^^^
+#+end_src
+** Proof functions
+- Manipulating proof terms as 1st class citizens is a game-changer
+- Can statically avoid data races!
+  + Given a proof of an array of length ~l~ and static index ~i~
+  + Statically split it into two proofs!
+  + Give each thread a sub-proof
+  + Can't access other thread's array elements!
+- Emulate slices!
+** Proof Functions
+- Proof function type signature:
+ #+begin_src sml
+prfun split
+  {a:t@ype}
+  {l:addr}{n,i:nat | i <= n}
+(
+  pfarr: array_v (a, l, n)
+) : ( array_v (a, l, i),
+      array_v (a, l+i*sizeof(a), n-i)
+    )
+...
+ #+end_src
+
+** Proof Functions
+- ~prfun~ == proof level function
+ #+begin_src sml
+prfun split
+
+
+
+
+
+
+
+...
+ #+end_src
+** Proof Functions
+- Takes /proof/ arguments of an array, static natural ~i~
+ #+begin_src sml
+prfun split
+  {a:t@ype}
+  {l:addr}{n,i:nat | i <= n}
+(
+  pfarr: array_v (a, l, n)
+) :
+
+
+...
+ #+end_src
+
+** Proof Functions
+- Returns /two/ proofs
+ #+begin_src sml
+prfun split
+
+
+(
+
+) : ( array_v (a, l, i), <--
+      array_v (a, l+i*sizeof(a), n-i) <--
+    )
+...
+ #+end_src
+** Proof Functions
+- Proof of an array at ~l~ of length ~i~
+ #+begin_src sml
+prfun split
+
+
+(
+
+) : ( array_v (a, l, i), <--
+
+    )
+...
+ #+end_src
+** Proof Functions
+- Proof of the second section of the array!
+ #+begin_src sml
+prfun split
+
+
+(
+
+) : (
+      array_v (a, l+i*sizeof(a), n-i) <--
+    )
+...
+ #+end_src
+** Proof Functions
+- The body
+  #+begin_src sml
+sif i > 0 then let
+  prval (pf1, pf2arr) = array_v_uncons pfarr
+  prval (pf1res1, pf1res2) =
+    split{..}{n-1,i-1} (pf2arr)
+in
+  (array_v_cons (pf1, pf1res1), pf1res2)
+end else let
+  prval EQINT () = eqint_make{i,0}((*void*))
+in
+  (array_v_nil (), pfarr)
+end
+  #+end_src
+
+** Proof Functions
+- There a corresponding ~sif~ , "static" if
+  #+begin_src sml
+sif i > 0 then let
+
+
+
+in
+
+end else let
+
+in
+
+end
+  #+end_src
+** Proof Functions
+- Grab /proof/ of the head and tail of the array
+  #+begin_src sml
+sif i > 0 then let
+  prval (pf1, pf2arr) = array_v_uncons pfarr <--
+
+
+in
+
+end else let
+
+in
+
+end
+  #+end_src
+** Proof Functions
+- ~array_v_uncons~ is a ~praxi~ just like ~opt_unsome~!
+  #+begin_src sml
+praxi array_v_uncons :
+{a:vt0p}{l:addr}{n:int | n > 0}
+array_v (a, l, n)
+  -<prf> (a @ l, array_v (a, l+sizeof(a), n-1))
+  #+end_src
+** Proof Functions
+- Recurse with the proof of the tail and updated static counters
+  #+begin_src sml
+sif i > 0 then let
+  prval (pf1, pf2arr) = ...
+  prval (pf1res1, pf1res2) =
+    split{..}{n-1,i-1} (pf2arr)
+in  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+end else let
+
+in
+
+end
+  #+end_src
+** Proof Functions
+- Put the two sections back together!
+  #+begin_src sml
+sif i > 0 then let
+  prval (pf1, pf2arr) = ...
+  prval (pf1res1, pf1res2) =
+
+in
+  (array_v_cons (pf1, pf1res1), pf1res2) <--
+end else let
+
+in
+
+end
+  #+end_src
+** Proof Functions
+- Otherwise the first section is proof of an empty array
+  #+begin_src sml
+sif i > 0 then let
+
+
+
+in
+
+end else let
+
+in
+  (array_v_nil (), pfarr)
+end
+  #+end_src
+** Proof Functions
+- In a function ~prval~ the proofs and work in parallel!
+- ~thread1~ and ~thread2~ /can/ /not/ stomp on each other!
+- That's it!
+  #+begin_src sml
+...
+prval(pf1,pf2) = split(pfarr)
+thread1(pf1 | ...);
+thread2(pf2 | ...);
+...
+  #+end_src
+** Taking stock
+- Tip of the iceberg!
+- Proof functions means very customizable type environments
+- Dependant types means much easier domain modeling
+  - Skeptical "simple sum types" are sufficient
+- Linear types means bullet-proof resource tracking
+** Taking stock
+- All these are great ideas!
+  - ATS is a great POC!
+- Steadily peels back the veil
+  - eg. every language designers knowns proof terms
+  - but keeps them internal!
+  - ATS shows we're ready for them
+- /The/ engineering problem is UX/DX
