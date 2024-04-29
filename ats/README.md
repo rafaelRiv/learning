@@ -6,3 +6,7 @@ https://ats-lang.sourceforge.net/DOCUMENT/INT2PROGINATS/HTML/book1.html
 
 https://bluishcoder.co.nz/tags/ats/
 
+# Memory Allocation and Deallocation
+
+https://ats-lang.github.io/DOCUMENT/INT2PROGINATS/HTML/x4226.html
+
