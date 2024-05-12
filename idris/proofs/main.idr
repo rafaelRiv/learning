@@ -12,6 +12,14 @@ basic_congruent_proof =  Refl
  - plus_assoc : (n, m, p : Nat) -> plus n (plus m p) = plus (plus n m) p
 -}
 
+title: String
+title = "Proofs validation"
+
+{-
+  title_proof: title = "Proofs validation"
+  title_proof = Refl
+-}
+
 main : IO ()
 main = putStrLn "Proofs valid"
 
