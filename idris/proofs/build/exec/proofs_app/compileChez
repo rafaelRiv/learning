@@ -1,1 +1,0 @@
-(parameterize ([optimize-level 3] [compile-file-message #f]) (compile-program "/home/rafael/Documents/learning/idris/proofs/build/exec/proofs_app/proofs.ss"))
