@@ -4,7 +4,7 @@ basic_congruent_proof : 5 = 5
 basic_congruent_proof =  Refl
 
 {-
- - Exercice: proof decideble equality
+ - Exercice: proof decidable equality
  - decNat : (n : Nat) -> (m : Nat) -> Dec (n = m)
 -}
 
@@ -32,6 +32,11 @@ decNat (S k) (S j) =
  - Exercice: proof assosiatiavity
  - plus_assoc : (n, m, p : Nat) -> plus n (plus m p) = plus (plus n m) p
 -}
+
+{-
+ - Exercice: proof showing that a list xs consists purely of repetitions of x
+-}
+
 
 main : IO ()
 main = putStrLn "Proofs valid"
