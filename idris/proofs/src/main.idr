@@ -50,6 +50,7 @@ plus_commutes_S : (n : Nat) -> (m : Nat) -> S (plus m n) = plus m (S n)
 plus_commutes_S m Z = Refl
 plus_commutes_S m (S n) = rewrite plus_commutes_S m n in Refl
 
+total
 plus_commutes : (n, m : Nat) -> n + m = m + n
 plus_commutes Z n = plus_commutes_Z n
 plus_commutes (S n) m = rewrite plus_commutes n m in plus_commutes_S n m
