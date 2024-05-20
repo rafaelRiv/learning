@@ -19,19 +19,48 @@ succDiffer : (contra: k = j -> Void) -> (prf: S k = S j) -> Void
 succDiffer contra Refl = contra Refl
 
 
-decNat : (n : Nat) -> (m : Nat) -> Dec (n = m)
-decNat 0 0  = Yes Refl
-decNat 0 (S k) = No zeroNotSucc
-decNat (S k) 0  = No succNotZero
-decNat (S k) (S j) = 
-  case decNat k j of
+decEqNat : (n : Nat) -> (m : Nat) -> Dec (n = m)
+decEqNat 0 0  = Yes Refl
+decEqNat 0 (S k) = No zeroNotSucc
+decEqNat (S k) 0  = No succNotZero
+decEqNat (S k) (S j) = 
+  case decEqNat k j of
     (Yes prf) => rewrite prf in Yes Refl
     (No contra) => No (succDiffer contra)
 
 {-
- - Exercice: proof assosiatiavity
- - plus_assoc : (n, m, p : Nat) -> plus n (plus m p) = plus (plus n m) p
+  Exercice: proof neutral element in +
+  
 -}
+
+plusReduceZ : (n: Nat) -> n + Z = n  
+plusReduceZ 0 = Refl -- Per definition
+plusReduceZ (S k) = cong S $ plusReduceZ k
+
+{-
+  Exercice: proof communativity
+  plus_commutes : (n, m : Nat) -> plus n m = plus m n
+-}
+
+plus_commutes_Z : (n : Nat) -> n = plus n 0
+plus_commutes_Z 0 = Refl
+plus_commutes_Z (S k) = cong S $ plus_commutes_Z k
+
+plus_commutes_S : (n : Nat) -> (m : Nat) -> S (plus m n) = plus m (S n)
+plus_commutes_S m Z = Refl
+plus_commutes_S m (S n) = rewrite plus_commutes_S m n in Refl
+
+plus_commutes : (n, m : Nat) -> n + m = m + n
+plus_commutes Z n = plus_commutes_Z n
+plus_commutes (S n) m = rewrite plus_commutes n m in plus_commutes_S n m
+
+{-
+ - Exercice: proof assosiatiavity
+-}
+
+plus_assoc : (n, m, p : Nat) -> n + (m + p) = (n + m) + p
+plus_assoc 0 m p = ?plus_assoc_rhs_0
+plus_assoc (S k) m p = ?plus_assoc_rhs_1
 
 {-
  - Exercice: proof showing that a list xs consists purely of repetitions of x
@@ -39,5 +68,12 @@ decNat (S k) (S j) =
 
 
 main : IO ()
-main = putStrLn "Proofs valid"
+main = do 
+  -- Test with IO decEqNat
+  case decEqNat 5 5 of
+    (Yes prf) => putStrLn "proof 5 = 5"
+    (No contra) => putStrLn "proof 5 != 5"
+
+
+      
 
