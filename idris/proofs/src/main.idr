@@ -65,6 +65,24 @@ plus_assoc 0 m p = Refl
 plus_assoc (S k) m p = rewrite plus_assoc k m p in Refl
 
 {-
+Exercice
+
+Prove that reverse a list twice gives the same list back.
+
+-}
+
+rev : List x -> List x
+rev [] = []
+rev (y :: xs) = rev xs ++ [y]
+
+revrevid_e : (y : x) -> (xs : List x) -> rev (rev xs ++ [y]) = y :: xs
+revrevid_e y xs = ?revrevid_rhs_1_rhs
+
+revrevid : (a : List x) -> (rev (rev a)) = a
+revrevid [] = Refl
+revrevid (y :: xs) = revrevid_e y xs
+
+{-
  - Exercice: proof showing that a list xs consists purely of repetitions of x
 -}
 
