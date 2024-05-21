@@ -65,6 +65,7 @@ plus_assoc 0 m p = Refl
 plus_assoc (S k) m p = rewrite plus_assoc k m p in Refl
 
 {-
+
 Exercice
 
 Prove that reverse a list twice gives the same list back.
