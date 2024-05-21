@@ -57,16 +57,16 @@ plus_commutes (S n) m = rewrite plus_commutes n m in plus_commutes_S n m
 
 {-
  - Exercice: proof assosiatiavity
+ - plus_assoc : (n, m, p : Nat) ->  n + (m + p) = (n + m) + p
 -}
 
-plus_assoc : (n, m, p : Nat) -> n + (m + p) = (n + m) + p
-plus_assoc 0 m p = ?plus_assoc_rhs_0
-plus_assoc (S k) m p = ?plus_assoc_rhs_1
+plus_assoc : (n, m, p : Nat) ->  n + (m + p) = (n + m) + p
+plus_assoc 0 m p = Refl
+plus_assoc (S k) m p = rewrite plus_assoc k m p in Refl
 
 {-
  - Exercice: proof showing that a list xs consists purely of repetitions of x
 -}
-
 
 main : IO ()
 main = do 
