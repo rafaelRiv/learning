@@ -1,7 +1,7 @@
 .global start
 
 .data
-	str: .asciz "2+2="
+	str: .string "2+2="
 
 .text
 start:
