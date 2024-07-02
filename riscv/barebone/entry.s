@@ -1,20 +1,25 @@
 .global start
 
+.data
+	str: .asciz "2+2="
+
 .text
 start:
   lui t0, 0x10000
 
-	addi t1, zero, '2'
-  sw t1, 0(t0)
+	la t1, str
 
-  addi t1, zero, '+'
-  sw t1, 0(t0)
+	lw t2, 0(t1)
+  sw t2, 0(t0)
 
-  addi t1, zero, '2'
-  sw t1, 0(t0)
+	lw t2, 1(t1)
+  sw t2, 0(t0)
 
-  addi t1, zero, '='
-  sw t1, 0(t0)
+	lw t2, 2(t1)
+  sw t2, 0(t0)
+	
+	lw t2, 3(t1)
+  sw t2, 0(t0)
 
 	addi s0, zero,2
 	addi s1, zero,2
