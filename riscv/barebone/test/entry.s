@@ -5,31 +5,32 @@
 
 .text
 start:
-  lui t0, 0x10000
+  lui s0, 0x10000
 
-	la t1, str # variable *str
-	addi t2, zero, 0 # variable i
+	la s1, str # variable *str
+	addi t0, zero, 0 # variable i
+	addi t1, zero, 4 # length of str
 
-	lw t3, 0(t1)
-  sw t3, 0(t0)
+	j for
 
-	lw t3, 1(t1)
-  sw t3, 0(t0)
+	for:
+		beq t0,t1, done
+		add s2, s1, t0
+		lw s3, 0(s2)
+  	sw s3, 0(s0)
+		addi t0,t0,1 # i++
+		j for
+	done:
 
-	lw t3, 2(t1)
-  sw t3, 0(t0)
-	
-	lw t3, 3(t1)
-  sw t3, 0(t0)
-
-	addi s0, zero,2
 	addi s1, zero,2
-	add s2, s0, s1
-	addi s3, s2, 48
-  sw s3, 0(t0)
+	addi s2, zero,2
+	add s3, s1, s2
+	addi s3, s3, 48
+  sw s3, 0(s0)
 
-  addi t1, zero, '\n'
-  sw t1, 0(t0)
+  addi s1, zero, '\n'
+  sw s1, 0(s0)
 
 	jal halt
+
 	
