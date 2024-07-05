@@ -1,3 +1,10 @@
+
 void main(void) {
-  int c = 2;
+	putChar('t');
 }
+
+void putChar(char c) {
+	char* UART = 0x10000000;
+	*UART=c;
+}
+

@@ -42,5 +42,7 @@ SECTIONS
   } >ram AT>ram :bss
 
   PROVIDE(_memory_start = ORIGIN(ram));
+	PROVIDE(_stack_start = _bss_end);
+  PROVIDE(_stack_end = _stack_start + 0x8000);
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
 }
