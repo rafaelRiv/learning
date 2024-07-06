@@ -27,7 +27,7 @@ putChar:
 	lw s0, 0(sp)
   addi sp,sp, 4
 
-	jr ra
+	ret
 
 # string -> IO ()
 putStrLn:
@@ -53,7 +53,7 @@ putStrLn:
 	lw ra, 0(sp)
   addi sp,sp, 8
 
-	jr ra
+	ret
 
 	donePutStrLn:
 		addi a0, zero, '\n'
@@ -63,5 +63,5 @@ putStrLn:
 		lw ra, 0(sp)
   	addi sp,sp, 8
 
-		jr ra
+		ret
 
