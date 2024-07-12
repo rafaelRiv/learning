@@ -1,0 +1,16 @@
+branches:       master
+
+doctest:        <9.9
+doctest-skip:   effectful-plugin
+
+tests:          True
+benchmarks:     True
+
+ghcup-jobs:     True
+jobs-selection: any
+
+installed:      -all
+
+raw-project
+  package effectful
+    flags: +benchmark-foreign-libraries

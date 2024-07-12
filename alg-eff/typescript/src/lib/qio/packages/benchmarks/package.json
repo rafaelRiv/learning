@@ -1,0 +1,41 @@
+{
+  "name": "@qio/benchmarks",
+  "private": true,
+  "version": "31.1.1",
+  "description": "> TODO: description",
+  "author": "Tushar Mathur <tusharmath@gmail.com>",
+  "homepage": "https://github.com/tusharmath/qio#readme",
+  "license": "ISC",
+  "main": "lib/benchmarks.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusharmath/qio.git"
+  },
+  "scripts": {
+    "test:io": "./run.sh IO ../docs/others/benchmarks.md"
+  },
+  "bugs": {
+    "url": "https://github.com/tusharmath/qio/issues"
+  },
+  "devDependencies": {
+    "@types/benchmark": "^1.0.31",
+    "@types/bluebird": "^3.5.30",
+    "benchmark": "^2.1.4",
+    "bluebird": "^3.7.2",
+    "fluture": "^12.2.0"
+  },
+  "dependencies": {
+    "@matechs/effect": "^5.0.9",
+    "@qio/core": "^31.1.1",
+    "@qio/prelude": "^31.1.0",
+    "fp-ts": "^2.5.3",
+    "retry-ts": "^0.1.2"
+  }
+}

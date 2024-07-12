@@ -1,0 +1,38 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:all", "tslint-config-prettier"],
+  "rules": {
+    "comment-format": false,
+    "completed-docs": false,
+    "interface-name": true,
+    "no-empty": false,
+    "no-implicit-dependencies": [true, "dev"],
+    "no-magic-numbers": false,
+    "no-parameter-properties": false,
+    "no-submodule-imports": true,
+    "no-use-before-declare": false,
+    "prefer-template": false,
+    "no-unbound-method": {
+      "options": "ignore-static"
+    },
+    "no-void-expression": false,
+    "variable-name": [true, "allow-pascal-case"],
+    // TEMPORARY SETTINGS
+    "file-name-casing": [true, "pascal-case"],
+    "typedef": [true, "call-signature", "parameter"],
+    "prefer-for-of": false,
+    "increment-decrement": false,
+    "max-classes-per-file": false,
+    "restrict-plus-operands": false,
+    "invalid-void": false,
+    // Some tslint bug that's converting numbers to string
+    "strict-string-expressions": false,
+    "strict-comparisons": [
+      true,
+      {
+        "allow-object-equal-comparison": true
+      }
+    ]
+  },
+  "rulesDirectory": []
+}

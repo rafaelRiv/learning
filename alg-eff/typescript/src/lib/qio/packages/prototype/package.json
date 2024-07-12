@@ -1,0 +1,30 @@
+{
+  "name": "@qio/prototype",
+  "version": "31.1.1",
+  "private": true,
+  "description": "Prototypes for that are based on QIO but are not a part of the core package.",
+  "author": "Tushar Mathur <tusharmath@gmail.com>",
+  "homepage": "https://github.com/tusharmath/qio#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusharmath/qio.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tusharmath/qio/issues"
+  },
+  "dependencies": {
+    "@qio/core": "^31.1.1"
+  }
+}

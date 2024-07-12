@@ -1,0 +1,40 @@
+{
+  "name": "@qio/example",
+  "private": true,
+  "version": "31.1.1",
+  "description": "> TODO: description",
+  "author": "Tushar Mathur <tusharmath@gmail.com>",
+  "homepage": "https://github.com/tusharmath/qio#readme",
+  "license": "ISC",
+  "main": "lib/example.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusharmath/qio.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tusharmath/qio/issues"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/chai-spies": "^1.0.1",
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "source-map-support": "^0.5.16"
+  },
+  "dependencies": {
+    "@qio/console": "^31.1.1",
+    "@qio/core": "^31.1.1",
+    "@qio/prelude": "^31.1.0",
+    "@qio/stream": "^31.1.1"
+  }
+}

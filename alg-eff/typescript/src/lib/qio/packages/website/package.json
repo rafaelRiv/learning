@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "name": "@qio/website",
+  "version": "31.1.0",
+  "scripts": {
+    "examples": "docusaurus-examples",
+    "start": "docusaurus-start",
+    "build": "docusaurus-build",
+    "publish-gh-pages": "docusaurus-publish",
+    "write-translations": "docusaurus-write-translations",
+    "version:ignore": "docusaurus-version",
+    "rename-version": "docusaurus-rename-version"
+  },
+  "description": "> TODO: description",
+  "author": "Tushar Mathur <tusharmath@gmail.com>",
+  "homepage": "https://github.com/tusharmath/qio#readme",
+  "license": "ISC",
+  "main": "lib/website.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusharmath/qio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tusharmath/qio/issues"
+  },
+  "dependencies": {
+    "docusaurus": "^1.14.4"
+  }
+}
