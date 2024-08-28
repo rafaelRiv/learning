@@ -1,0 +1,9 @@
+{
+  "generator-kips": {
+    "promptValues": {
+      "projectName": "in-node",
+      "projectDescription": "Checks if the program is running in node env.",
+      "keywords": "typescript node environment"
+    }
+  }
+}
