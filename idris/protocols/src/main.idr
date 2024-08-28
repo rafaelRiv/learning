@@ -16,10 +16,8 @@ data DoorCmd : Type -> DoorState -> DoorState -> Type where
 ma >> mb = ma >>= \ _ => mb
 
 doorProg : DoorCmd () DoorClosed DoorClosed
-doorProg = do
-  RingBell
-  OpenDoor
-  CloseDoor
+doorProg =
+  RingBell >> OpenDoor >> CloseDoor
  
 main : IO ()
 main = putStrLn "Type safe protocols"
