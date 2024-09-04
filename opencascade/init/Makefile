@@ -1,9 +1,9 @@
 CXXFLAGS += -I/usr/local/include/opencascade
-LDFLAGS += -lTKDraw
+LDFLAGS += -lglfw -lTKOpenGl -lTKService -lTKernel -lTKStd -lTKV3d -lTKTopAlgo -lTKPrim
 NAME = prog
 
 all:
-	g++ -o $(NAME) main.cpp $(CXXFLAGS) $(LDFLAGS) 
+	g++ -o $(NAME) main.cpp GlfwOcctView.cpp GlfwOcctWindow.cpp  $(CXXFLAGS) $(LDFLAGS) 
 
 clean:
 	rm $(NAME)
