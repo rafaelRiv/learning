@@ -28,6 +28,17 @@
 #include <AIS_ViewController.hxx>
 #include <V3d_View.hxx>
 
+#include <GC_MakeSegment.hxx>
+#include <GC_MakeArcOfCircle.hxx>
+
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
+
+#include <TopoDS.hxx>
+#include <TopoDS_Shape.hxx>
+#include <TopoDS_Wire.hxx>
+
 //! Sample class creating 3D Viewer within GLFW window.
 class GlfwOcctView : protected AIS_ViewController
 {
