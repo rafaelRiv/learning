@@ -191,9 +191,9 @@ void GlfwOcctView::initDemoScene()
 
   gp_Ax2 anAxis;
   anAxis.SetLocation (gp_Pnt (0.0, 0.0, 0.0));
-  Handle(AIS_Shape) aBox = new AIS_Shape (BRepPrimAPI_MakeBox (anAxis, 50, 50, 50).Shape());
-	TopoDS_Shape bottle = MakeBottle(50,70,30);
-  myContext->Display (aBox, AIS_Shaded, 0, false);
+  //Handle(AIS_Shape) aBox = new AIS_Shape (BRepPrimAPI_MakeBox (anAxis, 50, 50, 50).Shape());
+  Handle(AIS_Shape) aBottle = new AIS_Shape (MakeBottle(50,70,30));
+  myContext->Display (aBottle, AIS_Shaded, 0, false);
  
  }
 
