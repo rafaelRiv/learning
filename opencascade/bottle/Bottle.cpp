@@ -50,7 +50,7 @@ TopoDS_Shape MakeBottle(const Standard_Real myWidth, const Standard_Real myHeigh
     TopoDS_Wire myWireProfile = mkWire.Wire();
  
     // Body : Prism the Profile
- /*   TopoDS_Face myFaceProfile = BRepBuilderAPI_MakeFace(myWireProfile);
+    TopoDS_Face myFaceProfile = BRepBuilderAPI_MakeFace(myWireProfile);
     gp_Vec aPrismVec(0, 0, myHeight);
     TopoDS_Shape myBody = BRepPrimAPI_MakePrism(myFaceProfile, aPrismVec);
  
@@ -96,7 +96,7 @@ TopoDS_Shape MakeBottle(const Standard_Real myWidth, const Standard_Real myHeigh
                 faceToRemove = aFace;
             }
         }
-    }
+    } 
  
     TopTools_ListOfShape facesToRemove;
     facesToRemove.Append(faceToRemove);
@@ -148,14 +148,6 @@ TopoDS_Shape MakeBottle(const Standard_Real myWidth, const Standard_Real myHeigh
     aBuilder.Add (aRes, myBody);
     aBuilder.Add (aRes, myThreading);
  
-    return aRes; */
-
- 		TopoDS_Compound aRes;
-    BRep_Builder aBuilder;
-    aBuilder.MakeCompound (aRes);
-    aBuilder.Add (aRes, myWireProfile);
-  //  aBuilder.Add (aRes, myThreading);
- 
-    return aRes; 
+    return aRes;
 }
 
