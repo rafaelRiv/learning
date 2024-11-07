@@ -68,7 +68,7 @@ executable glfw-demo
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.20.0.0
+    build-depends:    base ^>=4.20.0.0, containers >= 0.7, OpenGL >= 3.0.3.0, GLFW-b >= 3.3.9.1
 
     -- Directories containing source files.
     hs-source-dirs:   app
